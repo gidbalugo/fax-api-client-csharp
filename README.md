@@ -1,4 +1,4 @@
-api-client-c-sharp
+api-client-csharp
 ==================
 
 Monopond Fax API C# Client
