@@ -41,7 +41,7 @@ namespace csharpclient
 
             //create a new instance of ApiService.
             ApiService apiClient = new ApiService("https://test.api.monopond.com/fax/soap/v2");
-            //ApiService apiClient = new ApiService("http://192.168.1.201:8000/fax/soap/v2");
+            //ApiService apiClient = new ApiService("https://api.monopond.com/fax/soap/v2");
 
             //TODO: change user credentials
             string username = "username";
