@@ -10,35 +10,6 @@ namespace csharpclient
     {
         static void Main(string[] args)
         {
-            //create a new fax document.
-            apiFaxDocument apiFaxDocument = new apiFaxDocument();
-            apiFaxDocument.FileData = "VGhpcyBpcyBhIGZheA==";
-            apiFaxDocument.FileName = "test.txt";
-
-            //create an array of api fax documents.
-            apiFaxDocument[] apiFaxDocuments;
-            apiFaxDocuments = new apiFaxDocument[1] { apiFaxDocument };
-
-            //create a new fax message.
-            apiFaxMessage apiFaxMessage1 = new apiFaxMessage();
-            apiFaxMessage1.MessageRef = "test-1-1-1";
-            apiFaxMessage1.SendTo = "6011111111";
-            apiFaxMessage1.SendFrom = "Test fax";
-            apiFaxMessage1.Resolution = faxResolution.normal;
-            apiFaxMessage1.Documents = apiFaxDocuments;
-
-            //create another fax message.
-            apiFaxMessage apiFaxMessage2 = new apiFaxMessage();
-            apiFaxMessage2.MessageRef = "test-1-1-1";
-            apiFaxMessage2.SendTo = "6011111111";
-            apiFaxMessage2.SendFrom = "Test fax";
-            apiFaxMessage2.Resolution = faxResolution.normal;
-            apiFaxMessage2.Documents = apiFaxDocuments;
-
-            //create an array of api fax messages.
-            apiFaxMessage[] apiFaxMessages;
-            apiFaxMessages = new apiFaxMessage[2] { apiFaxMessage1, apiFaxMessage2 };
-
             //create a new instance of ApiService.
             ApiService apiClient = new ApiService("https://test.api.monopond.com/fax/soap/v2");
             //ApiService apiClient = new ApiService("https://api.monopond.com/fax/soap/v2");
@@ -47,10 +18,11 @@ namespace csharpclient
             string username = "username";
             string password = "password";
 
+            //examples
             resumeFaxSample(apiClient, username, password);
             pauseFaxSample(apiClient, username, password);
             stopFaxSample(apiClient, username, password);
-            sendFaxSample(apiFaxMessages, apiClient, username, password);
+            sendFaxSample(apiClient, username, password);
             faxStatusSample(apiClient, username, password);
         }
 
@@ -84,8 +56,36 @@ namespace csharpclient
             stopFaxResponse stopFaxResponse = apiClient.StopFax(stopFaxRequest, username, password);
         }
 
-        private static void sendFaxSample(apiFaxMessage[] apiFaxMessages, ApiService apiClient, string username, string password)
+        private static void sendFaxSample(ApiService apiClient, string username, string password)
         {
+            //create a new fax document.
+            apiFaxDocument apiFaxDocument = new apiFaxDocument();
+            apiFaxDocument.FileData = "VGhpcyBpcyBhIGZheA==";
+            apiFaxDocument.FileName = "test.txt";
+
+            //create an array of api fax documents.
+            apiFaxDocument[] apiFaxDocuments;
+            apiFaxDocuments = new apiFaxDocument[1] { apiFaxDocument };
+
+            //create a new fax message.
+            apiFaxMessage apiFaxMessage1 = new apiFaxMessage();
+            apiFaxMessage1.MessageRef = "test-1-1-1";
+            apiFaxMessage1.SendTo = "6011111111";
+            apiFaxMessage1.SendFrom = "Test fax";
+            apiFaxMessage1.Resolution = faxResolution.normal;
+            apiFaxMessage1.Documents = apiFaxDocuments;
+
+            //create another fax message.
+            apiFaxMessage apiFaxMessage2 = new apiFaxMessage();
+            apiFaxMessage2.MessageRef = "test-1-1-1";
+            apiFaxMessage2.SendTo = "6011111111";
+            apiFaxMessage2.SendFrom = "Test fax";
+            apiFaxMessage2.Resolution = faxResolution.normal;
+            apiFaxMessage2.Documents = apiFaxDocuments;
+
+            //create an array of api fax messages.
+            apiFaxMessage[] apiFaxMessages = new apiFaxMessage[2] { apiFaxMessage1, apiFaxMessage2 };
+
             //create a new instance of sendFax request.
             sendFaxRequest sendFaxRequest = new sendFaxRequest();
             sendFaxRequest.FaxMessages = apiFaxMessages;
