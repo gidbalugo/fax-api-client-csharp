@@ -326,7 +326,7 @@ TODO: The default value is set to: “From %from%, To %to%|%a %b %d %H:%M %Y”
 |**fileData** |  | *Base64* | The document encoded in Base64 format. |
 
 ###Response
-The response received from a SendFaxRequest matches the response you receive when calling the FaxStatus method call with a “send” verbosity level.
+The response received from a `SendFaxRequest` matches the response you receive when calling the `FaxStatus` method call with a `send` verbosity level.
 
 ###SOAP Faults
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
@@ -588,7 +588,7 @@ private static void stopFaxSample(ApiService apiClient)
 
 
 ###Response
-The response received from a StopFaxRequest is the same response you would receive when calling the FaxStatus method call with the “send” verbosity level.
+The response received from a `StopFaxRequest` is the same response you would receive when calling the `FaxStatus` method call with the `send` verbosity level.
 
 ###SOAP Faults
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
@@ -601,7 +601,7 @@ You can find more details on these faults in Section 5 of this document.You can 
 ###Description
 Pauses a fax message before it starts transmitting. This fax message must either be queued, starting or sending. Please note the fax cannot be paused if the message is currently being transmitted to the destination device.
 
-When making a pause request, you must provide at least a BroadcastRef, SendRef or MessageRef. The function will also accept a combination of these to further narrow down the request. 
+When making a pause request, you must provide at least a `BroadcastRef`, `SendRef` or `MessageRef`. The function will also accept a combination of these to further narrow down the request. 
 
 ###Request
 ####PauseFaxRequest Properties:
@@ -651,7 +651,65 @@ private static void pauseFaxSample(ApiService apiClient)
 ```
 
 ###Response
-The response received from a PauseFaxRequest is the same response you would receive when calling the FaxStatus method call with the ***“send”*** verbosity level. 
+The response received from a `PauseFaxRequest` is the same response you would receive when calling the `FaxStatus` method call with the `send` verbosity level. 
+
+###SOAP Faults
+This function will throw one of the following SOAP faults/exceptions if something went wrong:
+**InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
+You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
+
+##ResumeFax
+
+When making a resume request, you must provide at least a `BroadcastRef`, `SendRef` or `MessageRef`. The function will also accept a combination of these to further narrow down the request. 
+
+###Request
+####ResumeFaxRequest Parameters:
+| Name | Required | Type | Description |
+| --- | --- | --- | --- |
+| **BroadcastRef** | | *String* | User-defined broadcast reference. |
+| **SendRef** | | *String* | User-defined send reference. |
+| **MessageRef** | | *String* | User-defined message reference. |
+
+###ResumeFax Request limiting by BroadcastRef:
+```C#
+private static void resumeFaxSample(ApiService apiClient)
+        {
+            // create a new instace of resumeFax request.
+            resumeFaxRequest resumeFaxRequest = new resumeFaxRequest();
+            resumeFaxRequest.BroadcastRef = "test-1-1-1";
+
+            // call the resumeFax method.
+            resumeFaxResponse resumeFaxResponse = apiClient.ResumeFax(resumeFaxRequest);
+        }
+```
+###ResumeFax Request limiting by SendRef:
+```C#
+private static void resumeFaxSample(ApiService apiClient)
+        {
+            // create a new instace of resumeFax request.
+            resumeFaxRequest resumeFaxRequest = new resumeFaxRequest();
+            resumeFaxRequest.SendRef = "test-1-1-1";
+
+            // call the resumeFax method.
+            resumeFaxResponse resumeFaxResponse = apiClient.ResumeFax(resumeFaxRequest);
+        }
+```
+###ResumeFax Request limiting by MessageRef:
+```C#
+private static void resumeFaxSample(ApiService apiClient)
+        {
+            // create a new instace of resumeFax request.
+            resumeFaxRequest resumeFaxRequest = new resumeFaxRequest();
+            resumeFaxRequest.MessageRef = "test-1-1-1";
+
+            // call the resumeFax method.
+            resumeFaxResponse resumeFaxResponse = apiClient.ResumeFax(resumeFaxRequest);
+        }
+```
+
+
+###Response
+The response received from a `ResumeFaxRequest` is the same response you would receive when calling the `FaxStatus` method call with the `send` verbosity level. 
 
 ###SOAP Faults
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
