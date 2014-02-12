@@ -24,7 +24,7 @@ string password = "password";
 ApiService apiClient = new ApiService(TEST_URL, username, password);
 ```
 
-#SendFax Request
+#SendFax
 ###Description
 This is the core function in the API allowing you to send faxes on the platform. 
 
@@ -338,11 +338,11 @@ You can find more details on these faults in Section 5 of this document.
 
 This function provides you with a method of retrieving the status, details and results of fax messages sent. While this is a legitimate method of retrieving results we strongly advise that you take advantage of our callback service (see Section 4), which will push these fax results to you as they are completed.
 
-When making a status request, you must provide at least a BroadcastRef, SendRef or MessageRef. The 
+When making a status request, you must provide at least a `BroadcastRef`, `SendRef` or `MessageRef`. The 
 function will also accept a combination of these to further narrow the request query.
-- Limiting by a BroadcastRef allows you to retrieve faxes contained in a group of send requests.
-- Limiting by SendRef allows you to retrieve faxes contained in a single send request.
-- Limiting by MessageRef allows you to retrieve a single fax message.
+- Limiting by a `BroadcastRef` allows you to retrieve faxes contained in a group of send requests.
+- Limiting by `SendRef` allows you to retrieve faxes contained in a single send request.
+- Limiting by `MessageRef` allows you to retrieve a single fax message.
 
 There are multiple levels of verbosity available in the request; these are explained in detail below. You can also find full examples in Section 6 of this document.
 
@@ -530,3 +530,130 @@ This function will throw one of the following SOAP faults/exceptions if somethin
 **InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
 You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
 
+##StopFax
+
+###Description
+Stops a fax message from sending. This fax message must either be paused, queued, starting or sending. Please note the fax cannot be stopped if the fax is currently in the process of being transmitted to the destination device.
+
+When making a stop request you must provide at least a `BroadcastRef`, `SendRef` or `MessageRef`. The function will also accept a combination of these to further narrow down the request.
+
+###Request
+####StopFaxRequest Properties:
+
+| Name | Required | Type | Description |
+| --- | --- | --- | --- | --- |
+| **BroadcastRef** | | *String* | User-defined broadcast reference. |
+| **SendRef** |  | *String* | User-defined send reference. |
+| **MessageRef** |  | *String* | User-defined message reference. |
+
+###StopFax Request limiting by BroadcastRef:
+```C#
+private static void stopFaxSample(ApiService apiClient)
+        {
+            // create a new instance of stopFax request.
+            stopFaxRequest stopFaxRequest = new stopFaxRequest();
+            stopFaxRequest.BroadcastRef = "test-1-1-1";
+
+            // call the stopFax method.
+            stopFaxResponse stopFaxResponse = apiClient.StopFax(stopFaxRequest);
+        }
+```
+
+###StopFax Request limiting by SendRef:
+
+```C#
+private static void stopFaxSample(ApiService apiClient)
+        {
+            // create a new instance of stopFax request.
+            stopFaxRequest stopFaxRequest = new stopFaxRequest();
+            stopFaxRequest.SendRef = "test-1-1-1";
+
+            // call the stopFax method.
+            stopFaxResponse stopFaxResponse = apiClient.StopFax(stopFaxRequest);
+        }
+```
+
+###StopFax Request limiting by MessageRef:
+```C#
+private static void stopFaxSample(ApiService apiClient)
+        {
+            // create a new instance of stopFax request.
+            stopFaxRequest stopFaxRequest = new stopFaxRequest();
+            stopFaxRequest.MessageRef = "test-1-1-1";
+
+            // call the stopFax method.
+            stopFaxResponse stopFaxResponse = apiClient.StopFax(stopFaxRequest);
+        }
+```
+
+
+###Response
+The response received from a StopFaxRequest is the same response you would receive when calling the FaxStatus method call with the “send” verbosity level.
+
+###SOAP Faults
+This function will throw one of the following SOAP faults/exceptions if something went wrong:
+
+**InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
+You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
+
+##PauseFax
+
+###Description
+Pauses a fax message before it starts transmitting. This fax message must either be queued, starting or sending. Please note the fax cannot be paused if the message is currently being transmitted to the destination device.
+
+When making a pause request, you must provide at least a BroadcastRef, SendRef or MessageRef. The function will also accept a combination of these to further narrow down the request. 
+
+###Request
+####PauseFaxRequest Properties:
+| Name | Required | Type | Description |
+| --- | --- | --- | --- |
+| **BroadcastRef** | | *String* | User-defined broadcast reference. |
+| **SendRef** | | *String* | User-defined send reference. |
+| **MessageRef** | | *String* | User-defined message reference. |
+
+
+###PauseFax Request limiting by BroadcastRef:
+```C#
+private static void pauseFaxSample(ApiService apiClient)
+        {
+            // create a new instance of pauseFax request.
+            pauseFaxRequest pauseFaxRequest = new pauseFaxRequest();
+            pauseFaxRequest.BroadcastRef = "test-1-1-1";
+
+            // call the pauseFax method.
+            pauseFaxResponse pauseFaxResponse = apiClient.PauseFax(pauseFaxRequest);
+        }
+```
+
+###PauseFax Request limiting by SendRef:
+```C#
+private static void pauseFaxSample(ApiService apiClient)
+        {
+            // create a new instance of pauseFax request.
+            pauseFaxRequest pauseFaxRequest = new pauseFaxRequest();
+            pauseFaxRequest.SendRef = "test-1-1-1";
+
+            // call the pauseFax method.
+            pauseFaxResponse pauseFaxResponse = apiClient.PauseFax(pauseFaxRequest);
+        }
+```
+###PauseFax Request limiting by MessageRef:
+```C#
+private static void pauseFaxSample(ApiService apiClient)
+        {
+            // create a new instance of pauseFax request.
+            pauseFaxRequest pauseFaxRequest = new pauseFaxRequest();
+            pauseFaxRequest.MessageRef = "test-1-1-1";
+
+            // call the pauseFax method.
+            pauseFaxResponse pauseFaxResponse = apiClient.PauseFax(pauseFaxRequest);
+        }
+```
+
+###Response
+The response received from a PauseFaxRequest is the same response you would receive when calling the FaxStatus method call with the ***“send”*** verbosity level. 
+
+###SOAP Faults
+This function will throw one of the following SOAP faults/exceptions if something went wrong:
+**InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
+You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
