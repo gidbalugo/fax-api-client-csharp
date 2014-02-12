@@ -10,8 +10,8 @@ Production WSDL: https://api.monopond.com/fax/soap/v2.1/?wsdl
 
 ```C#
 //Define WSDL URLs
-static String PRODUCTION_URL = "https://api.monopond.com/fax/soap/v2/";
-static String TEST_URL = "https://test.api.monopond.com/fax/soap/v2/";
+static String PRODUCTION_URL = "https://api.monopond.com/fax/soap/v2.1/";
+static String TEST_URL = "https://test.api.monopond.com/fax/soap/v2.1/";
 
 // TODO: change user credentials
 string username = "username";
@@ -331,12 +331,12 @@ The response received from a `SendFaxRequest` matches the response you receive w
 ###SOAP Faults
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
 **InvalidArgumentsException, NoMessagesFoundException, DocumentContentTypeNotFoundException, or InternalServerException.**
-You can find more details on these faults in Section 5 of this document.
+You can find more details on these faults [here](#section5).
 
 ##FaxStatus
 ###Description
 
-This function provides you with a method of retrieving the status, details and results of fax messages sent. While this is a legitimate method of retrieving results we strongly advise that you take advantage of our callback service (see Section 4), which will push these fax results to you as they are completed.
+This function provides you with a method of retrieving the status, details and results of fax messages sent. While this is a legitimate method of retrieving results we strongly advise that you take advantage of our callback service, which will push these fax results to you as they are completed.
 
 When making a status request, you must provide at least a `BroadcastRef`, `SendRef` or `MessageRef`. The 
 function will also accept a combination of these to further narrow the request query.
@@ -344,7 +344,7 @@ function will also accept a combination of these to further narrow the request q
 - Limiting by `SendRef` allows you to retrieve faxes contained in a single send request.
 - Limiting by `MessageRef` allows you to retrieve a single fax message.
 
-There are multiple levels of verbosity available in the request; these are explained in detail below. You can also find full examples in Section 6 of this document.
+There are multiple levels of verbosity available in the request; these are explained in detail below.
 
 **FaxStatusRequest Properties:**
 
@@ -528,7 +528,7 @@ Contains the total count of how many faxes ended in each result, as well as some
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
 
 **InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
-You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
+You can find more details on these faults [here](#section5).
 
 ##StopFax
 
@@ -594,8 +594,7 @@ The response received from a `StopFaxRequest` is the same response you would rec
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
 
 **InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
-You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
-
+You can find more details on these faults [here](#section5).
 ##PauseFax
 
 ###Description
@@ -656,14 +655,14 @@ The response received from a `PauseFaxRequest` is the same response you would re
 ###SOAP Faults
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
 **InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
-You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
+You can find more details on these faults in [here](#section5).
 
 ##ResumeFax
 
 When making a resume request, you must provide at least a `BroadcastRef`, `SendRef` or `MessageRef`. The function will also accept a combination of these to further narrow down the request. 
 
 ###Request
-####ResumeFaxRequest Parameters:
+####ResumeFaxRequest Properties:
 | Name | Required | Type | Description |
 | --- | --- | --- | --- |
 | **BroadcastRef** | | *String* | User-defined broadcast reference. |
@@ -714,4 +713,28 @@ The response received from a `ResumeFaxRequest` is the same response you would r
 ###SOAP Faults
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
 **InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
-You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
+You can find more details on these faults [here](#section5).
+
+<a name="section5"></a> 
+#More Information
+##Exceptions/SOAP Faults
+If an error occurs during a request on the Monopond Fax API the service will throw a SOAP fault or exception. Each exception is listed in detail below. 
+###InvalidArgumentsException
+One or more of the arguments passed in the request were invalid. Each element that failed validation is included in the fault details along with the reason for failure.
+###DocumentContentTypeNotFoundException
+There was an error while decoding the document provided; we were unable to determine its content type.
+###DocumentRefAlreadyExistsException
+There is already a document on your account with this DocumentRef.
+###DocumentContentTypeNotFoundException
+Content type could not be found for the document.
+###NoMessagesFoundException
+Based on the references sent in the request no messages could be found that match the criteria.
+###InternalServerException
+An unusual error occurred on the platform. If this error occurs please contact support for further instruction.
+
+##General Properties and File Formatting
+###File Encoding
+All files are encoded in the Base64 encoding specified in RFC 2045 - MIME (Multipurpose Internet Mail Extensions). The Base64 encoding is designed to represent arbitrary sequences of octets in a form that need not be humanly readable. A 65-character subset ([A-Za-z0-9+/=]) of US-ASCII is used, enabling 6 bits to be represented per printable character. For more information see http://tools.ietf.org/html/rfc2045 and http://en.wikipedia.org/wiki/Base64
+
+###Dates
+Dates are always passed in ISO-8601 format with time zone. For example: “2012-07-17T19:27:23+08:00”
