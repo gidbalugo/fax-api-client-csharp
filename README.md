@@ -1,5 +1,6 @@
 #Building A Request
-To use Monopond SOAP C# Client, start by adding a reference to `monopondProxy.cs`. To do this right click your project in the Solution Explorer, `click on Add > Existing Item > monopondProxy.cs`. 
+
+To use Monopond SOAP C# Client, start by adding a reference to `monopondProxy.cs`. To do this right click your project in the Solution Explorer, click on `Add > Existing Item > monopondSOAPClient.cs`. Then, add another reference to System.Web.Services, to do this, right click on the Solution Explorer, click on `add reference > .NET tab > System.Web.Services` then click OK. Monopond SOAP C# Client was tested in Microsoft Visual C# 2010. If you encountered problems running the client, consult with your account manager. 
 
 Create a new instance of the ApiService. This service needs a WSDL, your username and your password. We have two environments for the wsdl, so choose one that is appropriate for you: 
 
