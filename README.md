@@ -208,7 +208,7 @@ TODO: code here
 **SendRef**||String|Similar to the BroadcastRef, this allows the user to tag all faxes in this request with a send reference. The SendRef is used to represent all faxes in this request only, so naturally it must be unique.|
 **FaxMessages**|**X**| Array of FaxMessage |FaxMessages describe each individual fax message and its destination. See below for details.|
 **SendFrom**||Alphanumeric String|A customisable string used to identify the sender of the fax. Also known as the Transmitting Subscriber Identification (TSID). The maximum string length is 32 characters|Fax
-**Documents**|**X**|Array of FaxDocument|Each FaxDocument object describes a fax document to be sent. Multiple documents can be defined here which will be concatenated and sent in the same message. See below for details.|
+**Documents**|**X**|Array of apiFaxDocument|Each FaxDocument object describes a fax document to be sent. Multiple documents can be defined here which will be concatenated and sent in the same message. See below for details.|
 **Resolution**||Resolution|Resolution setting of the fax document. Refer to the resolution table below for possible resolution values.|normal
 **ScheduledStartTime**||DateTime|The date and time the transmission of the fax will start.|Current time (immediate sending)
 **Blocklists**||Blocklists|The blocklists that will be checked and filtered against before sending the message. See below for details.WARNING: This feature is inactive and non-functional in this (2.1) version of the Fax API.|
@@ -226,7 +226,7 @@ This represents a single fax message being sent to a destination.
 **MessageRef** | **X** | String | A unique user-provided identifier that is used to identify the fax message. This can be used at a later point to retrieve the results of the fax message. |
 **SendTo** | **X** | String | The phone number the fax message will be sent to. |
 **SendFrom** | | Alphanumeric String | A customisable string used to identify the sender of the fax. Also known as the Transmitting Subscriber Identification (TSID). The maximum string length is 32 characters | Empty
-**Documents** | **X** | Array of FaxDocument | Each FaxDocument object describes a fax document to be sent. Multiple documents can be defined here which will be concatenated and sent in the same message. See below for details. | 
+**Documents** | **X** | Array of apiFaxDocument | Each FaxDocument object describes a fax document to be sent. Multiple documents can be defined here which will be concatenated and sent in the same message. See below for details. | 
 **Resolution** | | Resolution|Resolution setting of the fax document. Refer to the resolution table below for possible resolution values.| normal
 **ScheduledStartTime** | | DateTime | The date and time the transmission of the fax will start. | Start now
 **Blocklists** | | Blocklists | The blocklists that will be checked and filtered against before sending the message. See below for details. WARNING: This feature is inactive and non-functional in this (2.1) version of the Fax API. |
@@ -288,7 +288,7 @@ TODO: The default value is set to: “From %from%, To %to%|%a %b %d %H:%M %Y”
 
 <a name="docMergeDataParameters"></a> 
 
-**DocMergeData Mergefield Parameters:**
+**DocMergeData Mergefield Properties:**
 
 |**Name** | **Required** | **Type** | **Description** |
 |-----|-----|-----|-----|
@@ -296,7 +296,7 @@ TODO: The default value is set to: “From %from%, To %to%|%a %b %d %H:%M %Y”
 |**Value** | | *String* | The value that replaces the key. |
 
 <a name="stampMergeDataParameters"></a> 
-**StampMergeData Mergefield Parameters:**
+**StampMergeData Mergefield Properties:**
 
 |**Name** | **Required** | **Type** | **Description** |
 |-----|-----|-----|-----|
@@ -304,21 +304,21 @@ TODO: The default value is set to: “From %from%, To %to%|%a %b %d %H:%M %Y”
 |**TextValue** |  | *StampMergeFieldTextValue* | The text value that replaces the key. |
 |**ImageValue** |  | *StampMergeFieldImageValue* | The image value that replaces the key. |
 
- **StampMergeFieldKey Parameters:**
+ **StampMergeFieldKey Properties:**
 
 | **Name** | **Required** | **Type** | **Description** |
 |----|-----|-----|-----|
 | **xCoord** |  | *Int* | X coordinate. |
 | **yCoord** |  | *Int* | Y coordinate. |
 
-**StampMergeFieldTextValue Parameters:**
+**StampMergeFieldTextValue Properties:**
 
 |**Name** | **Required** | **Type** | **Description** |
 |-----|-----|-----|-----|
 |**fontName** |  | *String* | Font name to be used. |
 |**fontSize** |  | *Decimal* | Font size to be used. |
 
-**StampMergeFieldImageValue Parameters:**
+**StampMergeFieldImageValue Properties:**
 
 |**Name** | **Required** | **Type** | **Description** |
 |-----|-----|-----|-----|
@@ -328,7 +328,205 @@ TODO: The default value is set to: “From %from%, To %to%|%a %b %d %H:%M %Y”
 ###Response
 The response received from a SendFaxRequest matches the response you receive when calling the FaxStatus method call with a “send” verbosity level.
 
-**SOAP Faults**
+###SOAP Faults
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
 **InvalidArgumentsException, NoMessagesFoundException, DocumentContentTypeNotFoundException, or InternalServerException.**
 You can find more details on these faults in Section 5 of this document.
+
+##FaxStatus
+###Description
+
+This function provides you with a method of retrieving the status, details and results of fax messages sent. While this is a legitimate method of retrieving results we strongly advise that you take advantage of our callback service (see Section 4), which will push these fax results to you as they are completed.
+
+When making a status request, you must provide at least a BroadcastRef, SendRef or MessageRef. The 
+function will also accept a combination of these to further narrow the request query.
+- Limiting by a BroadcastRef allows you to retrieve faxes contained in a group of send requests.
+- Limiting by SendRef allows you to retrieve faxes contained in a single send request.
+- Limiting by MessageRef allows you to retrieve a single fax message.
+
+There are multiple levels of verbosity available in the request; these are explained in detail below. You can also find full examples in Section 6 of this document.
+
+**FaxStatusRequest Properties:**
+
+| **Name** | **Required** | **Type** | **Description** |
+|--- | --- | --- | --- | ---|
+|**BroadcastRef**|  | *String* | User-defined broadcast reference. |
+|**SendRef**|  | *String* | User-defined send reference. |
+|**MessageRef**|  | *String* | User-defined message reference. |
+|**Verbosity**|  | *String* | Verbosity String The level of detail in the status response. Please see below for a list of possible values.| |
+
+**Verbosity Levels:**	
+  
+| **Value** | **Description** |
+| --- | --- |
+| **brief** | Gives you an overall view of the messages. This simply shows very high-level statistics, consisting of counts of how many faxes are at each status (i.e. processing, queued,sending) and totals of the results of these faxes (success, failed, blocked). |
+| **send** | send Includes the results from ***“brief”*** while also including an itemised list of each fax message in the request. |
+| **details** | details Includes the results from ***“send”*** along with details of the properties used to send the fax messages. |
+| **results** |Includes the results from ***“send”*** along with the sending results of the fax messages. |
+| **all** | all Includes the results from both ***“details”*** and ***“results”*** along with some extra uncommon fields. |
+
+###Sending a faxStatus Request with “brief” verbosity:
+
+```C#
+private static void faxStatusSample(ApiService apiClient)
+        {
+            // create a new instance of fax status request.
+            faxStatusRequest faxStatusRequest = new faxStatusRequest();
+            faxStatusRequest.MessageRef = "test-1-1-1";
+            faxStatusRequest.Verbosity = faxStatusLevel.brief;
+
+            // call the faxStatus method.
+            faxStatusResponse response = apiClient.FaxStatus(faxStatusRequest);
+        }
+```
+
+###Sending a faxStatus Request with “send” verbosity:
+
+```C#
+private static void faxStatusSample(ApiService apiClient)
+        {
+            // create a new instance of fax status request.
+            faxStatusRequest faxStatusRequest = new faxStatusRequest();
+            faxStatusRequest.MessageRef = "test-1-1-1";
+            faxStatusRequest.Verbosity = faxStatusLevel.send;
+
+            // call the faxStatus method.
+            faxStatusResponse response = apiClient.FaxStatus(faxStatusRequest);
+        }
+```
+
+###Sending a faxStatus Request with “details” verbosity:
+
+```C#
+private static void faxStatusSample(ApiService apiClient)
+        {
+            // create a new instance of fax status request.
+            faxStatusRequest faxStatusRequest = new faxStatusRequest();
+            faxStatusRequest.MessageRef = "test-1-1-1";
+            faxStatusRequest.Verbosity = faxStatusLevel.details;
+
+            // call the faxStatus method.
+            faxStatusResponse response = apiClient.FaxStatus(faxStatusRequest);
+        }
+```
+
+###Sending a faxStatus Request with “results” verbosity:
+
+```C#
+private static void faxStatusSample(ApiService apiClient)
+        {
+            // create a new instance of fax status request.
+            faxStatusRequest faxStatusRequest = new faxStatusRequest();
+            faxStatusRequest.MessageRef = "test-1-1-1";
+            faxStatusRequest.Verbosity = faxStatusLevel.results;
+
+            // call the faxStatus method.
+            faxStatusResponse response = apiClient.FaxStatus(faxStatusRequest);
+        }
+```
+###Response
+The response received depends entirely on the verbosity level specified.
+
+**FaxStatusResponse:**
+
+| Name | Type | Verbosity | Description |
+| --- | --- | --- | --- |
+| **FaxStatusTotals** | *FaxStatusTotals* | *brief* | Counts of how many faxes are at each status. See below for more details. |
+| **FaxResultsTotals** | *FaxResultsTotals* | *brief* | FaxResultsTotals FaxResultsTotals brief Totals of the end results of the faxes. See below for more details. |
+| **FaxMessages** | *Array of FaxMessage* | *send* | send List of each fax in the query. See below for more details. |
+
+**FaxStatusTotals:**
+
+Contains the total count of how many faxes are at each status. 
+To see more information on each fax status, view the FaxStatus table below.
+
+| Name | Type | Verbosity | Description |
+| --- | --- | --- | --- |
+| **pending** | *Long* | *brief* | Fax is pending on the system and waiting to be processed.|
+| **processing** | *Long* | *brief* | Fax is in the initial processing stages. |
+| **queued** | *Long* | *brief* | Fax has finished processing and is queued, ready to send out at the send time. |
+| **starting** | *Long* | *brief* | Fax is ready to be sent out. |
+| **sending** | *Long* | *brief* | Fax has been spooled to our servers and is in the process of being sent out. |
+| **finalizing** | *Long* | *brief* | Fax has finished sending and the results are being processed.|
+| **done** | *Long* | *brief* | Fax has completed and no further actions will take place. The detailed results are available at this status. |
+
+**FaxResultsTotals:**
+
+Contains the total count of how many faxes ended in each result, as well as some additional totals. To view more information on each fax result, view the FaxResults table below.
+
+| Name | Type | Verbosity | Description |
+| --- | --- | --- | --- |
+| **success** | *Long* | *brief* | Fax has successfully been delivered to its destination.|
+| **blocked** | *Long* |  *brief* | Destination number was found in one of the block lists. |
+| **failed** | *Long* | *brief* | Fax failed getting to its destination.|
+| **totalAttempts** | *Long* | *brief* |Total attempts made in the reference context.|
+| **totalFaxDuration** | *Long* | *brief* |totalFaxDuration Long brief Total time spent on the line in the reference context.|
+| **totalPages** | *Long* | *brief* | Total pages sent in the reference context.|
+
+
+**apiFaxMessageStatus:**
+
+| Name | Type | Verbosity | Description |
+| --- | --- | --- | --- |
+| **messageRef** | *String* | *send* | |
+| **sendRef** | *String* | *send* | |
+| **broadcastRef** | *String* | *send* | |
+| **sendTo** | *String* | *send* | |
+| **status** |  | *send* | The current status of the fax message. See the FaxStatus table above for possible status values. |
+| **FaxDetails** | *FaxDetails* | *details* | Contains the details and settings the fax was sent with. See below for more details. |
+| **FaxResults** | *Array of FaxResult* | *results* | Contains the results of each attempt at sending the fax message and their connection details. See below for more details. |
+
+**FaxDetails:**
+
+| Name | Type | Verbosity |
+| --- | --- | --- | --- |
+| **sendFrom** | *Alphanumeric String* | *details* |
+| **resolution** | *String* | *details* |
+| **retries** | *Integer* | *details* |
+| **busyRetries** | *Integer* | *details* |
+| **headerFormat** | *String* | *details* |
+
+**FaxResults:**
+
+| Name | Type | Verbosity | Description |
+| --- | --- | --- | --- |
+| **attempt** | *Integer* | *results* | The attempt number of the FaxResult. |
+| **result** | *String* | *results* | The result of the fax message. See the FaxResults table above for all possible results values. |
+| **Error** | *FaxError* | *results* |  The fax error code if the fax was not successful. See below for all possible values. |
+| **cost** | *BigDecimal* | *results* | The final cost of the fax message. | 
+| **pages** | *Integer* | *results* | Total pages sent to the end fax machine. |
+| **scheduledStartTime** | *DateTime* | *results* | The date and time the fax is scheduled to start. |
+| **dateCallStarted** | *DateTime* | *results* | Date and time the fax started transmitting. |
+| **dateCallEnded** | *DateTime* | *results* | Date and time the fax finished transmitting. |
+
+**FaxError:**
+
+| Value | Error Name |
+| --- | --- |
+| **DOCUMENT_EXCEEDS_PAGE_LIMIT** | Document exceeds page limit |
+| **DOCUMENT_UNSUPPORTED** | Unsupported document type |
+| **DOCUMENT_FAILED_CONVERSION** | Document failed conversion |
+| **FUNDS_INSUFFICIENT** | Insufficient funds |
+| **FUNDS_FAILED** | Failed to transfer funds |
+| **BLOCK_ACCOUNT** | Number cannot be sent from this account |
+| **BLOCK_GLOBAL** | Number found in the Global blocklist |
+| **BLOCK_SMART** | Number found in the Smart blocklist |
+| **BLOCK_DNCR** | Number found in the DNCR blocklist |
+| **BLOCK_CUSTOM** | Number found in a user specified blocklist |
+| **FAX_NEGOTIATION_FAILED** | Negotiation failed |
+| **FAX_EARLY_HANGUP** | Early hang-up on call |
+| **FAX_INCOMPATIBLE_MACHINE** | Incompatible fax machine |
+| **FAX_BUSY** | Phone number busy |
+| **FAX_NUMBER_UNOBTAINABLE** | Number unobtainable |
+| **FAX_SENDING_FAILED** | Sending fax failed |
+| **FAX_CANCELLED** | Cancelled |
+| **FAX_NO_ANSWER** | No answer |
+| **FAX_UNKNOWN** | Unknown fax error |
+
+###SOAP Faults
+
+This function will throw one of the following SOAP faults/exceptions if something went wrong:
+
+**InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
+You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
+
