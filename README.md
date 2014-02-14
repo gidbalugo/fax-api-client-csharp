@@ -160,6 +160,8 @@ When sending multiple faxes in batch it is recommended to group them into reques
 
 This request is used to send a Microsoft document with replaceable variables or merge fields. The merge field follows the pattern ```<mf:key>```.  If your key is ```field1```, it should be typed as ```<mf:field1>``` in the document. Note that the key must be unique within the whole document. The screenshots below are examples of what the request does.
 
+Original .doc file:
+
 ![before](https://github.com/Monopond/fax-api/raw/master/img/DocMergeData/before.png)
 
 This is what the file looks like after the fields ```field1```,```field2``` and ```field3``` have been replaced with values ```lazy dog```, ```fat pig``` and ```fat pig```:
@@ -170,7 +172,53 @@ This is what the file looks like after the fields ```field1```,```field2``` and 
 The example below shows ```field1``` will be replaced by the value of ```Test```.
 
 ```C#
-//TODO: Add code here.
+private static void sendFaxSample_docMergeData(ApiService apiClient)
+        {
+            //create docMergeFields
+            apiFaxDocumentDocMergeField docMergeField1 = new apiFaxDocumentDocMergeField();
+            docMergeField1.Key = "field1";
+            docMergeField1.Value = "lazy dog";
+
+            apiFaxDocumentDocMergeField docMergeField2 = new apiFaxDocumentDocMergeField();
+            docMergeField2.Key = "field2";
+            docMergeField2.Value = "fat pig";
+
+            apiFaxDocumentDocMergeField docMergeField3 = new apiFaxDocumentDocMergeField();
+            docMergeField3.Key = "field3";
+            docMergeField3.Value = "fat pig";
+
+            apiFaxDocumentDocMergeField[] docMergeData = new apiFaxDocumentDocMergeField[3] {
+                docMergeField1, docMergeField2, docMergeField3
+            };
+
+            // create a new fax document.
+            apiFaxDocument apiFaxDocument = new apiFaxDocument();
+            apiFaxDocument.FileData = sample_DocxFileData();
+            apiFaxDocument.FileName = "test.docx";
+            apiFaxDocument.DocMergeData = docMergeData;
+
+            // create an array of api fax documents.
+            apiFaxDocument[] apiFaxDocuments;
+            apiFaxDocuments = new apiFaxDocument[1] { apiFaxDocument };
+
+            //create a new fax message.
+            apiFaxMessage apiFaxMessage1 = new apiFaxMessage();
+            apiFaxMessage1.MessageRef = "test-1-1-1";
+            apiFaxMessage1.SendTo = "6011111111";
+            apiFaxMessage1.SendFrom = "Test fax";
+            apiFaxMessage1.Resolution = faxResolution.normal;
+
+            // create an array of api fax messages.
+            apiFaxMessage[] apiFaxMessages = new apiFaxMessage[1] { apiFaxMessage1 };
+
+            //create a new instance of sendFax request.
+            sendFaxRequest sendFaxRequest = new sendFaxRequest();
+            sendFaxRequest.FaxMessages = apiFaxMessages;
+            sendFaxRequest.Documents = apiFaxDocuments;
+
+            // call the sendFax method.
+            sendFaxResponse sendFaxResponse = apiClient.SendFax(sendFaxRequest);
+        }
 ```
 
 ###Sending Tiff and PDF files with StampMergeData:
@@ -199,7 +247,73 @@ The same tiff file, but this time, with a text stamp:
 The example below shows a PDF that will be stamped with the text “Hello” at xCoord=“1287” and yCoord=“421”, and an image at xCoord=“283” and yCoord=“120”
 
 ```C#
-TODO: code here
+private static void sendFaxSample_stampMergeData_TextAndImageStamp(ApiService apiClient)
+        {
+            //create stampMergeField
+            apiFaxDocumentStampMergeFieldKey key1 = new apiFaxDocumentStampMergeFieldKey();
+            key1.xCoord = 283;
+            key1.yCoord = 120;
+            key1.xCoordSpecified = true;
+            key1.yCoordSpecified = true;
+
+            apiFaxDocumentStampMergeFieldImageValue imageValue = new apiFaxDocumentStampMergeFieldImageValue();
+            imageValue.FileName = "stamp.png";
+            imageValue.FileData = sample_StampData();
+            imageValue.height = 189;
+            imageValue.heightSpecified = true;
+            imageValue.width = 388;
+            imageValue.widthSpecified = true;
+
+            apiFaxDocumentStampMergeField imageStamp = new apiFaxDocumentStampMergeField();
+            imageStamp.ImageValue = imageValue;
+            imageStamp.Key = key1;
+
+            //create stampMergeField.
+            apiFaxDocumentStampMergeFieldKey key2 = new apiFaxDocumentStampMergeFieldKey();
+            key2.xCoord = 1287;
+            key2.yCoord = 421;
+            key2.xCoordSpecified = true;
+            key2.yCoordSpecified = true;
+
+            apiFaxDocumentStampMergeFieldTextValue textValue = new apiFaxDocumentStampMergeFieldTextValue();
+            textValue.fontName = "Times-Roman";
+            textValue.Value = "Hello";
+
+            apiFaxDocumentStampMergeField textStamp = new apiFaxDocumentStampMergeField();
+            textStamp.TextValue = textValue;
+            textStamp.Key = key2;
+
+            apiFaxDocumentStampMergeField[] stampMergeFields = new apiFaxDocumentStampMergeField[2] { imageStamp, textStamp };
+
+            // create a new fax document.
+            apiFaxDocument apiFaxDocument = new apiFaxDocument();
+            apiFaxDocument.FileData = sample_TiffFileData();
+            apiFaxDocument.FileName = "test.tiff";
+            apiFaxDocument.StampMergeData = stampMergeFields;
+            apiFaxDocument.DocumentRef = "xxx-xxx";
+
+            // create an array of api fax documents.
+            apiFaxDocument[] apiFaxDocuments;
+            apiFaxDocuments = new apiFaxDocument[1] { apiFaxDocument };
+
+            //create a new fax message.
+            apiFaxMessage apiFaxMessage1 = new apiFaxMessage();
+            apiFaxMessage1.MessageRef = "test-1-1-1";
+            apiFaxMessage1.SendTo = "6011111111";
+            apiFaxMessage1.SendFrom = "Test fax";
+            apiFaxMessage1.Resolution = faxResolution.normal;
+
+            // create an array of api fax messages.
+            apiFaxMessage[] apiFaxMessages = new apiFaxMessage[1] { apiFaxMessage1 };
+
+            //create a new instance of sendFax request.
+            sendFaxRequest sendFaxRequest = new sendFaxRequest();
+            sendFaxRequest.FaxMessages = apiFaxMessages;
+            sendFaxRequest.Documents = apiFaxDocuments;
+
+            // call the sendFax method.
+            sendFaxResponse sendFaxResponse = apiClient.SendFax(sendFaxRequest);
+        }
 ```
 
 ###sendFaxRequest Properties:
@@ -715,6 +829,193 @@ The response received from a `ResumeFaxRequest` is the same response you would r
 This function will throw one of the following SOAP faults/exceptions if something went wrong:
 **InvalidArgumentsException**, **NoMessagesFoundException**, or **InternalServerException**.
 You can find more details on these faults [here](#section5).
+
+##PreviewFaxDocument
+###Description
+
+This function provides you with a method to generate a preview of a saved document at different resolutions with various dithering settings. It returns a tiff data in base64 along with a page count.
+
+###Sample Request
+```c#
+private static void faxDocumentPreviewSample_stampMergeData(ApiService apiClient)
+        {
+            //create a stampMergeField.
+            apiFaxDocumentStampMergeFieldKey key = new apiFaxDocumentStampMergeFieldKey();
+            key.xCoord = 0;
+            key.yCoord = 0;
+            key.xCoordSpecified = true;
+            key.yCoordSpecified = true;
+
+            apiFaxDocumentStampMergeFieldImageValue imageValue = new apiFaxDocumentStampMergeFieldImageValue();
+            imageValue.FileName = "stamp.png";
+            imageValue.FileData = sample_StampData();
+            imageValue.height = 189;
+            imageValue.heightSpecified = true;
+            imageValue.width = 388;
+            imageValue.widthSpecified = true;
+
+            apiFaxDocumentStampMergeField imageStamp = new apiFaxDocumentStampMergeField();
+            imageStamp.ImageValue = imageValue;
+            imageStamp.Key = key;
+
+            //add the imageStamp into an array of stampMergeFields.
+            apiFaxDocumentStampMergeField[] stampMergeFields = new apiFaxDocumentStampMergeField[1] { imageStamp };
+
+            //create a new instance of faxDocumentPreview request.
+            faxDocumentPreviewRequest previewRequest = new faxDocumentPreviewRequest();
+            previewRequest.StampMergeData = stampMergeFields;
+            previewRequest.DocumentRef = "xxx-xxx";
+
+            //call the faxDocumentPreview method.
+            faxDocumentPreviewResponse previewResponse = apiClient.FaxDocumentPreview(previewRequest);
+        }
+```
+
+###Request
+**FaxDocumentPreviewRequest Parameters:**
+
+| **Name** | **Required** | **Type** | **Description** | **Default** |
+|--- | --- | --- | --- | ---|
+|**Resolution**|  | *Resolution* |Resolution setting of the fax document. Refer to the resolution table below for possible resolution values.| normal |
+|**DitheringTechnique**| | *FaxDitheringTechnique* | Applies a custom dithering method to the fax document before transmission. | |
+|**DocMergeData** | | *Array of DocMergeData MergeFields* | Each mergefield has a key and a value. The system will look for the keys in a document and replace them with their corresponding value. ||
+|**StampMergeData** | | *Array of StampMergeData MergeFields* | Each mergefield has a key a corressponding TextValue/ImageValue. The system will look for the keys in a document and replace them with their corresponding value. | | |
+
+**DocMergeData Mergefield Parameters:**
+
+|**Name** | **Required** | **Type** | **Description** |
+|-----|-----|-----|-----|
+|**Key** | | *String* | A unique identifier used to determine which fields need replacing. |
+|**Value** | | *String* | The value that replaces the key. |
+
+**StampMergeData Mergefield Parameters:**
+
+|**Name** | **Required** | **Type** | **Description** |
+|-----|-----|-----|-----|
+|**Key** |  | *StampMergeFieldKey* | Contains x and y coordinates where the ImageValue or TextValue should be placed. |
+|**TextValue** |  | *StampMergeFieldTextValue* | The text value that replaces the key. |
+|**ImageValue** |  | *StampMergeFieldImageValue* | The image value that replaces the key. |
+
+ **StampMergeFieldKey Parameters:**
+
+| **Name** | **Required** | **Type** | **Description** |
+|----|-----|-----|-----|
+| **xCoord** |  | *Int* | X coordinate. |
+| **yCoord** |  | *Int* | Y coordinate. |
+
+**StampMergeFieldTextValue Parameters:**
+
+|**Name** | **Required** | **Type** | **Description** |
+|-----|-----|-----|-----|
+|**fontName** |  | *String* | Font name to be used. |
+|**fontSize** |  | *Decimal* | Font size to be used. |
+
+**StampMergeFieldImageValue Parameters:**
+
+|**Name** | **Required** | **Type** | **Description** |
+|-----|-----|-----|-----|
+|**fileName** |  | *String* | The document filename including extension. This is important as it is used to help identify the document MIME type. |
+|**fileData** |  | *Base64* | The document encoded in Base64 format. |
+
+**FaxDitheringTechnique:**
+
+| Value | Fax Dithering Technique |
+| --- | --- |
+| **none** | No dithering. |
+| **normal** | Normal dithering.|
+| **turbo** | Turbo dithering.|
+| **darken** | Darken dithering.|
+| **darken_more** | Darken more dithering.|
+| **darken_extra** | Darken extra dithering.|
+| **ligthen** | Lighten dithering.|
+| **lighten_more** | Lighten more dithering. |
+| **crosshatch** | Crosshatch dithering. |
+| **DETAILED** | Detailed dithering. |
+
+**Resolution Levels:**
+
+| **Value** | **Description** |
+| --- | --- |
+| **normal** | Normal standard resolution (98 scan lines per inch) |
+| **fine** | Fine resolution (196 scan lines per inch) |
+
+###Response
+**FaxDocumentPreviewResponse**
+
+**Name** | **Type** | **Description** 
+-----|-----|-----
+**TiffPreview** | *String* | A preview version of the document encoded in Base64 format. 
+**NumberOfPages** | *Int* | Total number of pages in the document preview.
+
+###SOAP Faults
+This function will throw one of the following SOAP faults/exceptions if something went wrong:
+**DocumentRefDoesNotExistException**, **InternalServerException**, **UnsupportedDocumentContentType**, **MergeFieldDoesNotMatchDocumentTypeException**, **UnknownHostException**.
+You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
+
+##SaveFaxDocument
+###Description
+
+This function allows you to upload a document and save it under a document reference (DocumentRef) for later use. (Note: These saved documents only last 30 days on the system.)
+
+###Sample Request
+
+```c#
+private static void saveFaxDocumentSample(ApiService apiClient)
+        {
+            //create a saveFaxDocumentRequest.
+            saveFaxDocumentRequest saveFaxDocumentRequest = new saveFaxDocumentRequest();
+            saveFaxDocumentRequest.FileName = "test.txt";
+            saveFaxDocumentRequest.FileData = "tiffDataBase64==";
+            saveFaxDocumentRequest.DocumentRef = "doc-ref-xxx"; //note that documentRef must be unique! TODO: Change this!
+
+            //call the saveFaxDocument method.
+            saveFaxDocumentResponse saveFaxDocumentResponse = apiClient.SaveFaxDocument(saveFaxDocumentRequest);
+        }
+```
+
+###Request
+**SaveFaxDocumentRequest Parameters:**
+
+| **Name** | **Required** | **Type** | **Description** |
+|--- | --- | --- | --- | ---|
+|**DocumentRef**| **X** | *String* | Unique identifier for the document to be uploaded. |
+|**FileName**| **X** | *String* | The document filename including extension. This is important as it is used to help identify the document MIME type. |
+| **FileData**|**X**| *Base64* |The document encoded in Base64 format.| |
+
+###SOAP Faults
+This function will throw one of the following SOAP faults/exceptions if something went wrong:
+**DocumentRefAlreadyExistsException**, **DocumentContentTypeNotFoundException**, **InternalServerException**.
+You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
+
+##DeleteFaxDocument
+###Description
+
+This function removes a saved fax document from the system.
+
+###Sample Request
+```C#
+private static void deleteFaxSample(ApiService apiClient)
+        {
+            //create a new instance of deleteFaxRequest
+            deleteFaxDocumentRequest deleteFaxRequest = new deleteFaxDocumentRequest();
+            deleteFaxRequest.DocumentRef = "some-doc-ref";
+
+            //call the deleteFax method.
+            deleteFaxDocumentResponse deleteFaxDocumentResponse = apiClient.DeleteFaxDocument(deleteFaxRequest);
+        }
+```
+
+###Request
+**DeleteFaxDocumentRequest Parameters:**
+
+| **Name** | **Required** | **Type** | **Description** |
+|--- | --- | --- | --- | ---|
+|**DocumentRef**| **X** | *String* | Unique identifier for the document to be deleted. |
+
+###SOAP Faults
+This function will throw one of the following SOAP faults/exceptions if something went wrong:
+**DocumentRefDoesNotExistException**, **InternalServerException**.
+You can find more details on these faults in Section 5 of this document.You can find more details on these faults in the next section of this document.
 
 <a name="section5"></a> 
 #More Information
