@@ -1,6 +1,21 @@
-#Building A Request
+fax-api-client-csharp
+=====================
 
-To use Monopond SOAP C# Client, start by adding a reference to `monopondProxy.cs`. To do this right click your project in the Solution Explorer, click on `Add > Existing Item > monopondSOAPClient.cs`. Then, add another reference to System.Web.Services, to do this, right click on the Solution Explorer, click on `add reference > .NET tab > System.Web.Services` then click OK. Monopond SOAP C# Client was tested in Microsoft Visual C# 2010. If you encountered problems running the client, consult with your account manager. 
+Monopond Fax API C# Client
+
+###Overview:
+
+* This is a C# soap web serice client for monopond web serivces.
+* This client was tested in Microsoft Visual C# 2010. If you encountered problems using the client, consult with your account manager.
+* Provides concrete classes that you can use to map values to requests and read responses.
+
+###Basic Usage:
+
+To use Monopond SOAP C# Client, start by adding a reference to `monopondSOAPClient.cs`. To do this right click your project in the Solution Explorer, click on `Add > Existing Item > monopondSOAPClient.cs`. Then, add another reference to System.Web.Services, to do this, right click on the Solution Explorer, click on `add reference > .NET tab > System.Web.Services` then click OK.   
+
+In the project folder, a file called `Program.cs` is provided to show you several examples of how to use the requests.
+
+#Building A Request
 
 Create a new instance of the ApiService. This service needs a WSDL, your username and your password. We have two environments for the wsdl, so choose one that is appropriate for you: 
 
