@@ -8,6 +8,7 @@ Monopond Fax API C# Client
 * This is a C# soap web serice client for monopond web serivces.
 * This client was tested in Microsoft Visual C# 2010. If you encountered problems using the client, consult with your account manager.
 * Provides concrete classes that you can use to map values to requests and read responses.
+* To gain access to the system you must have a Monopond user account that is flagged with Fax API privileges. 
 
 ###Basic Usage:
 
