@@ -373,7 +373,6 @@ Represents a fax document to be sent through the system. Supported file types ar
 
 **Name**|**Required**|**Type**|**Description**|**Default**
 -----|-----|-----|-----|-----
-**DocumentRef**|| *String* | Unique identifier for the document to be uploaded. |
 **FileName**|**X**|String|The document filename including extension. This is important as it is used to help identify the document MIME type.|
 **FileData**|**X**|Base64|The document encoded in Base64 format.|
 **Order** | | Integer|If multiple documents are defined on a message this value will determine the order in which they will be transmitted.|0|
