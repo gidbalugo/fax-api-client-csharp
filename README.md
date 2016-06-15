@@ -83,6 +83,22 @@ To send a fax to a single destination a request similar to the following example
 
 ```
 
+###Setting-up your faxes with retries:
+To set-up apiFaxMessage to have retries a request similar to the following example can be used. Please note the addition of ”RetriesSpecified” and ”Retries" , if ”RetriesSpecified” is not supplied or initialized, it will have false value as default and ”Retries" will be ignored.
+```C#
+//create a new fax message.
+            apiFaxMessage apiFaxMessage1 = new apiFaxMessage();
+            apiFaxMessage1.MessageRef = "test-1-1-1";
+            apiFaxMessage1.SendTo = "6011111111";
+            apiFaxMessage1.SendFrom = "Test fax";
+            apiFaxMessage1.Resolution = faxResolution.normal;
+            apiFaxMessage1.Documents = apiFaxDocuments;
+            
+            apiFaxMessage1.RetriesSpecified = true;
+            apiFaxMessage1.Retries = 2;
+            
+```
+
 ###Sending multiple faxes:
 To send faxes to multiple destinations a request similar to the following example can be used. Please note the addition of another “FaxMessage”:
 ```C#
@@ -362,6 +378,7 @@ This represents a single fax message being sent to a destination.
 **ScheduledStartTime** | | DateTime | The date and time the transmission of the fax will start. | Start now
 **Blocklists** | | Blocklists | The blocklists that will be checked and filtered against before sending the message. See below for details. WARNING: This feature is inactive and non-functional in this (2.1) version of the Fax API. |
 **Retries** | | Unsigned Integer | The number of times to retry sending the fax if it fails. Each account has a maximum number of retries that can be changed by consultation with your account manager. | Account Default
+**RetriesSpecified** | | Boolean | Indicator if Retries values will be ignored or not.  | False
 **BusyRetries** | | Unsigned Integer | Certain fax errors such as “NO_ANSWER” or “BUSY” are not included in the above retries limit and can be set separately. Please consult with your account manager in regards to maximum value.|account default
 **HeaderFormat** | | String | Allows the header format that appears at the top of the transmitted fax to be changed. See below for an explanation of how to format this field. | From： X, To: X
 **MustBeSentBeforeDate** | | DateTime |  Specifies a time the fax must be delivered by. Once the specified time is reached the fax will be cancelled across the system. | 
